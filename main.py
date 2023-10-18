@@ -2,6 +2,7 @@ import pygame as pyg
 from time import time
 
 pyg.init()
+monospace = pyg.font.SysFont("monospace", 15)
 
 # Initial Width and Height
 IWIDTH = 500
@@ -9,7 +10,7 @@ IHEIGHT = 500
 WIDTH = IWIDTH
 HEIGHT = IHEIGHT
 FULLSCREEN = False
-screen = pyg.display.set_mode((WIDTH, HEIGHT))
+screen = pyg.display.set_mode((WIDTH, HEIGHT), pyg.DOUBLEBUF)
 
 Player = pyg.Rect(WIDTH/2, HEIGHT-50, 50, 50)
 
@@ -18,7 +19,7 @@ P_Velocity = [0, 0]
 # Kilograms
 P_Mass = 20
 running = True
-DT = 0
+DT = 1
 
 while running:
     # NEVER use this.
@@ -35,7 +36,7 @@ while running:
                 FULLSCREEN = not FULLSCREEN
                 pyg.display.quit()
                 pyg.display.init()
-                screen = pyg.display.set_mode((0 if FULLSCREEN else IWIDTH, 0 if FULLSCREEN else IHEIGHT), pyg.FULLSCREEN if FULLSCREEN else 0)
+                screen = pyg.display.set_mode((0 if FULLSCREEN else IWIDTH, 0 if FULLSCREEN else IHEIGHT), pyg.FULLSCREEN & pyg.DOUBLEBUF if FULLSCREEN else pyg.DOUBLEBUF)
                 WIDTH = screen.get_width()
                 HEIGHT = screen.get_height()
                 del Player
@@ -70,9 +71,10 @@ while running:
             Player.left = 0
         P_Velocity[0] *= -1
     Player.move_ip(-P_Velocity[0], -P_Velocity[1])
-    print(P_Velocity)
     screen.fill((180, 180, 255))
     pyg.draw.rect(screen, P_Color, Player, 0)
+    label = monospace.render(f'{1/DT:.0f} FPS', True, (100, 100, 175))
+    screen.blit(label, (0, 0))
     pyg.display.flip()
     DT = time()-_DT
 pyg.quit()
