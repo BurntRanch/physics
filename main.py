@@ -51,13 +51,14 @@ while running:
         # this was also why I put a ceiling, to stop it from flying up (seemingly) forever.
         P_Velocity[1] -= (4.9 if 1 <= P_Velocity[0] or -1 >= P_Velocity[0] else 9.8)*(P_Mass/((HEIGHT-Player.centery)/(HEIGHT/54)))*DT
         # pygame doesn't consider any number under 1 due to rounding
-        if -0.75 < P_Velocity[1] <= 0.75:
-            P_Velocity[1] = -P_Velocity[1]
+        # removed because we have a custom coordinate system that supports floating points.
+        # if -0.75 < P_Velocity[1] <= 0.75:
+        #     P_Velocity[1] = -P_Velocity[1]
     # friction
     # if its grounded and there is vertical velocity and there is no horizontal velocity, apply friction
     if P_Coordinates[1] >= HEIGHT-50 and (P_Velocity[0] > 0 or P_Velocity[0] < -0) and not (P_Velocity[1] > 0 or P_Velocity[1] < -0):
-        P_Velocity[0] *= 0.98
-        if (P_Velocity[0] < 0.1 and P_Velocity[0] > -0.1):
+        P_Velocity[0] *= 0.9
+        if (P_Velocity[0] < 1 and P_Velocity[0] > -1):
             P_Velocity[0] = 0
     # bouncing should apply if the ball is trying to crash into the floor/ceiling
     # while the side wall bouncing just sets the vertical velocity to the opposite, (xV*-1), this one is different as it should not be bouncing at the exact same speed as before.
@@ -78,6 +79,7 @@ while running:
     if P_Coordinates[1] > HEIGHT-50.5 and (P_Velocity[1] < 1 and P_Velocity[1] > -1):
         P_Coordinates[1] = HEIGHT-50
         P_Velocity[1] = 0
+    print(P_Coordinates, P_Velocity)
     P_Coordinates[0] += -P_Velocity[0]
     P_Coordinates[1] += -P_Velocity[1]
     Player.x = P_Coordinates[0]
