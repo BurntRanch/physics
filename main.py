@@ -45,37 +45,37 @@ while running:
         # gravity should pull you down by a dynamic number every second
         # every (HEIGHT/54) px is a meter (i guess, i hate this part of code because it causes the square to have slow gravity above, which is realistic but in a 1920x1080 screen, it looks weird)
         # this was also why I put a ceiling, to stop it from flying up (seemingly) forever.
-        Player.Velocity[1] -= (4.9 if 1 <= Player.Velocity[0] or -1 >= Player.Velocity[0] else 9.8)*(P_Mass/((HEIGHT-Player.Rect.centery)/(HEIGHT/54)))*DT
+        Player.Velocity[1] -= 9.8*(P_Mass/((HEIGHT-Player.Rect.centery)/(HEIGHT/54)))*DT
         # pygame doesn't consider any number under 1 due to rounding
         # removed because we have a custom coordinate system that supports floating points.
         # if -0.75 < Player.Velocity[1] <= 0.75:
         #     Player.Velocity[1] = -Player.Velocity[1]
     # friction
     # if its grounded and there is vertical velocity and there is no horizontal velocity, apply friction
-    if Player.Coordinates[1] >= HEIGHT-50 and (Player.Velocity[0] > 0 or Player.Velocity[0] < -0) and not (Player.Velocity[1] > 0 or Player.Velocity[1] < -0):
-        Player.Velocity[0] *= 0.9
+    if Player.Rect.bottom >= HEIGHT and (Player.Velocity[0] > 0 or Player.Velocity[0] < -0):
+        Player.Velocity[0] *= 0.98
         if (Player.Velocity[0] < 1 and Player.Velocity[0] > -1):
             Player.Velocity[0] = 0
     # bouncing should apply if the ball is trying to crash into the floor/ceiling
     # while the side wall bouncing just sets the vertical velocity to the opposite, (xV*-1), this one is different as it should not be bouncing at the exact same speed as before.
     # Like in real life, if you threw something at the ground it would soon enough lose momentum and fall
-    elif Player.Rect.bottom > HEIGHT or Player.Rect.top < 0:
+    if Player.Rect.bottom > HEIGHT or Player.Rect.top < 0:
         if Player.Rect.bottom > HEIGHT:
             Player.Coordinates[1] = HEIGHT-50
         else:
             Player.Coordinates[1] = 0
 #        Player.Velocity[0] = 0
-        Player.Velocity[1] *= -.9
+        Player.Velocity[1] *= -1
+        Player.Velocity[1] -= 2
     if Player.Rect.right > WIDTH or Player.Rect.left < 0:
         if Player.Rect.right > WIDTH:
             Player.Coordinates[0] = WIDTH-50
         else:
             Player.Coordinates[0] = 0
         Player.Velocity[0] *= -1
-    if Player.Coordinates[1] > HEIGHT-50.5 and (Player.Velocity[1] < 1 and Player.Velocity[1] > -1):
+    if Player.Rect.bottom >= HEIGHT and (Player.Velocity[1] < 1 and Player.Velocity[1] > -1):
         Player.Coordinates[1] = HEIGHT-50
         Player.Velocity[1] = 0
-    # print(Player.Coordinates, Player.Velocity)
     Player.Coordinates[0] += -Player.Velocity[0]
     Player.Coordinates[1] += -Player.Velocity[1]
     Player.Rect.x = Player.Coordinates[0]
